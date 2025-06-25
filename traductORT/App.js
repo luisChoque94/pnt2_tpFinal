@@ -1,77 +1,55 @@
-import "react-native-gesture-handler";
+"use client"
+import { StyleSheet, ActivityIndicator, View } from "react-native"
+import { NavigationContainer } from "@react-navigation/native"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Button, Text, View } from "react-native";
-import TraductorScreen from "./screens/TraductorScreen";
-import HistorialScreen from "./screens/HistorialScreen";
+import { AuthProvider, useAuth } from "./context/AuthContext"
+import AuthScreen from "./screens/AuthScreen"
+import TraductorScreen from "./screens/TraductorScreen"
+import HistorialScreen from "./screens/HistorialScreen"
 
-import { NavigationContainer } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SafeAreaFrameContext } from "react-native-safe-area-context";
-import { SafeAreaView } from "react-native-web";
+const Stack = createNativeStackNavigator()
 
-const StackNavigator = () => {
-  const Stack = createNativeStackNavigator();
-  const navigation = useNavigation();
+const AppNavigator = () => {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    )
+  }
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Traductor"
-        component={TraductorScreen}
-        options={{
-          title: "  TraductORT",
-          headerLeft: () => (
-            <Button
-              title="Historial"
-              onPress={() => {
-                navigation.navigate("HistorialScreen");
-              }}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="HistorialScreen"
-        component={HistorialScreen}
-        options={{
-          title: "Historial de Traducciones",
-         /*  headerRight: () => (
-            <Button
-              title="Traductor"
-              onPress={() => {
-                navigation.navigate("Traductor");
-              }}
-            />
-          ), */
-          headderBackTitle: "Volver",
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-};
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <>
+            <Stack.Screen name="Traductor" component={TraductorScreen} options={{ title: "TraductORT" }} />
+            <Stack.Screen name="Historial" component={HistorialScreen} options={{ title: "Historial" }} />
+          </>
+        ) : (
+          <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
 
 export default function App() {
   return (
-
-      <NavigationContainer>
-        <StackNavigator />
-        <StatusBar style="auto" />
-      </NavigationContainer>
-
-    /* <View>
-        <TraductorScreen />
-        <StatusBar style="auto" />
-      </View> */
-  );
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
-});
+})
