@@ -1,5 +1,5 @@
 "use client"
-import { StyleSheet, ActivityIndicator, View } from "react-native"
+import { StyleSheet, ActivityIndicator, View, TouchableOpacity, Text } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
@@ -26,8 +26,26 @@ const AppNavigator = () => {
       <Stack.Navigator>
         {user ? (
           <>
-            <Stack.Screen name="Traductor" component={TraductorScreen} options={{ title: "TraductORT" }} />
-            <Stack.Screen name="Historial" component={HistorialScreen} options={{ title: "Historial" }} />
+            <Stack.Screen
+              name="Traductor"
+              component={TraductorScreen}
+              options={({ navigation }) => ({
+                title: "TraductORT",
+                headerLeft: () => (
+                  <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate("Historial")}>
+                    <Text style={{ color: "#007AFF", fontSize: 16 }}>Historial</Text>
+                  </TouchableOpacity>
+                ),
+              })}
+            />
+            <Stack.Screen
+              name="Historial"
+              component={HistorialScreen}
+              options={{
+                title: "Historial de Traducciones",
+                headerBackTitle: "Volver",
+              }}
+            />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />

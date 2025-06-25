@@ -12,5 +12,22 @@ export async function traducir(texto, de = 'en', a = 'es') {
   }
 }
 
-// Ejemplo de uso
-//
+/* TEST API 
+export const traducir = async (texto, sourceLanguage, targetLanguage) => {
+  try {
+    const response = await fetch(
+      `https://api.mymemory.translated.net/get?q=${texto}&langpair=${sourceLanguage}|${targetLanguage}`,
+    )
+    const data = await response.json()
+    if (data.responseData && data.responseData.translatedText) {
+      return data.responseData.translatedText
+    } else {
+      console.error("Error en la traducción:", data)
+      return "Error al traducir"
+    }
+  } catch (error) {
+    console.error("Error al realizar la solicitud de traducción:", error)
+    return "Error al traducir"
+  }
+}
+ */
