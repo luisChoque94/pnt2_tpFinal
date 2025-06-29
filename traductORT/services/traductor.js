@@ -1,5 +1,6 @@
 export const traducir = async (texto, sourceLanguage, targetLanguage) => {
   try {
+    //https://mymemory.translated.net/doc/spec.php
     const response = await fetch(
       `https://api.mymemory.translated.net/get?q=${texto}&langpair=${sourceLanguage}|${targetLanguage}`,
     )

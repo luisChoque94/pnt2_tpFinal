@@ -1,14 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from "react-native"
+import { View, Text, TextInput, Button, TouchableOpacity, Alert} from "react-native"
 import { traducir } from "../services/traductor"
 import { useAuth } from "../context/AuthContext"
 import { signOut } from "../services/auth"
+import { styles } from "../styles/traductorStyle"
+
+import { Picker } from "@react-native-picker/picker" //componente para seleccionar idioma con desplegable
+
+//lista de idiomas para mostrar en el picker
+const idiomasDisponibles = [
+  { label: "Inglés", value: "en" },
+  { label: "Español", value: "es" },
+  { label: "Francés", value: "fr" },
+  { label: "Italiano", value: "it" },
+  { label: "Alemán", value: "de" },
+]
 
 export default function TraductorScreen() {
   const [textoOriginal, setTextoOriginal] = useState("")
   const [traduccion, setTraduccion] = useState("")
+  const [idiomaOrigen, setIdiomaOrigen] = useState("en")          //por default ingles
+  const [idiomaDestino, setIdiomaDestino] = useState("es")        //por default español
+
   const { user } = useAuth()
 
   const manejarTraduccion = async () => {
@@ -17,7 +32,9 @@ export default function TraductorScreen() {
       return
     }
 
-    const resultado = await traducir(textoOriginal, "en", "es")
+
+    /* const resultado = await traducir(textoOriginal, "en", "es") */
+    const resultado = await traducir(textoOriginal, idiomaOrigen, idiomaDestino)
     if (resultado) setTraduccion(resultado)
   }
 
@@ -37,18 +54,49 @@ export default function TraductorScreen() {
           <Text style={styles.signOutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
+      
+      <Text style={styles.title}>TraducORT</Text> 
 
-      <Text style={styles.title}>Traductor Inglés → Español</Text>
+      <Text style={styles.label}>Idioma de origen:</Text>
+      <Picker
+        selectedValue={idiomaOrigen}
+        onValueChange={(itemValue) => setIdiomaOrigen(itemValue)}
+        style={styles.picker}
+      >
+        {idiomasDisponibles.map((idioma) => (
+          <Picker.Item key={idioma.value} label={idioma.label} value={idioma.value} />
+        ))}
+      </Picker>
 
+      <Text style={styles.label}>Idioma destino:</Text>
+      <Picker
+        selectedValue={idiomaDestino}
+        onValueChange={(itemValue) => setIdiomaDestino(itemValue)}
+        style={styles.picker}
+      >
+        {idiomasDisponibles.map((idioma) => (
+          <Picker.Item key={idioma.value} label={idioma.label} value={idioma.value} />
+        ))}
+      </Picker>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Escribí el texto"
+        value={textoOriginal}
+        onChangeText={setTextoOriginal}
+        multiline
+      />
+
+      {/* <Text style={styles.title}>Traductor Inglés → Español</Text>
       <TextInput
         style={styles.input}
         placeholder="Escribí texto en inglés"
         value={textoOriginal}
         onChangeText={setTextoOriginal}
         multiline
-      />
+      /> */}
 
-      <Button title="Traducir" onPress={manejarTraduccion} />
+      <Button title="Traducir" onPress={manejarTraduccion} /> 
 
       {traduccion ? (
         <View style={styles.resultadoContainer}>
@@ -59,61 +107,3 @@ export default function TraductorScreen() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    flex: 1,
-  },
-  signOutButton: {
-    padding: 8,
-  },
-  signOutText: {
-    color: "#007AFF",
-    fontSize: 14,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  input: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 6,
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  resultadoContainer: {
-    marginTop: 20,
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 6,
-  },
-  resultadoLabel: {
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  resultado: {
-    fontSize: 18,
-  },
-})
