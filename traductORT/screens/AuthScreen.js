@@ -93,11 +93,9 @@ export default function AuthScreen() {
           <Text style={styles.buttonText}>{loading ? "Cargando..." : isLogin ? "Iniciar Sesión" : "Registrarse"}</Text>
         </TouchableOpacity>
 
-        {Platform.OS === "web" && (
-          <TouchableOpacity style={[styles.button, styles.googleButton]} onPress={handleGoogleAuth} disabled={loading}>
-            <Text style={styles.buttonText}>Continuar con Google</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={[styles.button, styles.googleButton]} onPress={handleGoogleAuth} disabled={loading}>
+          <Text style={styles.buttonText}>Continuar con Google</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.switchButton} onPress={() => setIsLogin(!isLogin)}>
           <Text style={styles.switchText}>

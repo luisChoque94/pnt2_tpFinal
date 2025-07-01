@@ -1,5 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"
+import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
 
 // Sacar a config file las keys
@@ -11,9 +10,27 @@ const firebaseConfig = {
   messagingSenderId: "440387280914",
   appId: "1:440387280914:web:21088ab053755d3cf7f8cb",
   measurementId: "G-3BQFE19H1P"
-};
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-export const auth = getAuth(app)
+
+// Initialize Auth with platform detection
+const initializeFirebaseAuth = () => {
+  try {
+    // Try React Native first
+    const { initializeAuth, getReactNativePersistence } = require("firebase/auth")
+    const AsyncStorage = require("@react-native-async-storage/async-storage").default
+
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    })
+  } catch (error) {
+    // Fallback to web
+    const { getAuth } = require("firebase/auth")
+    return getAuth(app)
+  }
+}
+
+export const auth = initializeFirebaseAuth()
 export const db = getFirestore(app)
