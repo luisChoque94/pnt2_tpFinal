@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { View, Text, TextInput, Button, TouchableOpacity, Alert } from "react-native"
 import { traducirYGuardar } from "../services/asyncFirestoreStorage"
@@ -23,7 +21,7 @@ export default function TraductorScreen() {
   const [traduccion, setTraduccion] = useState("")
   const [idiomaOrigen, setIdiomaOrigen] = useState("en")          //por default ingles
   const [idiomaDestino, setIdiomaDestino] = useState("es")        //por default español
-
+  const [cargando, setCargando] = useState(false)
   const { user } = useAuth()
 
   const manejarTraduccion = async () => {
@@ -32,6 +30,7 @@ export default function TraductorScreen() {
       return
     }
 
+    setCargando(true)
     try {
       const resultado = await traducirYGuardar(user.uid, textoOriginal, idiomaOrigen, idiomaDestino)
       if (resultado) setTraduccion(resultado)
