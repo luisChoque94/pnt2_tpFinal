@@ -4,11 +4,11 @@ import { styles } from '../styles/historialStyle';
 
 
 export default function HistorialScreen() {
-    return(
-    <View style={styles.container}>
-        <Text >
-            Historial de Traducciones
-        </Text>
-    </View>
+    return (
+        <View style={styles.container}>
+            <Text >
+                Historial de Traducciones
+            </Text>
+        </View>
     )
 }

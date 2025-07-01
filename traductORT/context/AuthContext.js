@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { onAuthStateChanged } from "../services/auth"
+import { onAuthStateChanged } from "../services/authService"
 
 const AuthContext = createContext({})
 

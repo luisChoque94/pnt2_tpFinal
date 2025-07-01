@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, TextInput, Button, TouchableOpacity, Alert} from "react-native"
-import { traducir } from "../services/traductor"
+import { View, Text, TextInput, Button, TouchableOpacity, Alert } from "react-native"
+import { traducirYGuardar } from "../services/asyncFirestoreStorage"
 import { useAuth } from "../context/AuthContext"
-import { signOut } from "../services/auth"
+import { signOut } from "../services/authService"
 import { styles } from "../styles/traductorStyle"
 
 import { Picker } from "@react-native-picker/picker" //componente para seleccionar idioma con desplegable
@@ -32,10 +32,14 @@ export default function TraductorScreen() {
       return
     }
 
-
-    /* const resultado = await traducir(textoOriginal, "en", "es") */
-    const resultado = await traducir(textoOriginal, idiomaOrigen, idiomaDestino)
-    if (resultado) setTraduccion(resultado)
+    try {
+      const resultado = await traducirYGuardar(user.uid, textoOriginal, idiomaOrigen, idiomaDestino)
+      if (resultado) setTraduccion(resultado)
+    } catch (error) {
+      Alert.alert("Error", "No se pudo traducir el texto")
+    } finally {
+      setCargando(false)
+    }
   }
 
   const handleSignOut = async () => {
@@ -54,8 +58,8 @@ export default function TraductorScreen() {
           <Text style={styles.signOutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
-      
-      <Text style={styles.title}>TraducORT</Text> 
+
+      <Text style={styles.title}>TraducORT</Text>
 
       <Text style={styles.label}>Idioma de origen:</Text>
       <Picker
@@ -87,16 +91,7 @@ export default function TraductorScreen() {
         multiline
       />
 
-      {/* <Text style={styles.title}>Traductor Inglés → Español</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Escribí texto en inglés"
-        value={textoOriginal}
-        onChangeText={setTextoOriginal}
-        multiline
-      /> */}
-
-      <Button title="Traducir" onPress={manejarTraduccion} /> 
+      <Button title="Traducir" onPress={manejarTraduccion} />
 
       {traduccion ? (
         <View style={styles.resultadoContainer}>

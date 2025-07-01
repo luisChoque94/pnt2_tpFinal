@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native"
-import { signInWithEmail, signUpWithEmail, signInWithGoogle } from "../services/auth"
+import { signInWithEmail, signUpWithEmail, signInWithGoogle } from "../services/authService"
 import { styles } from "../styles/authStyle"
 
 export default function AuthScreen() {
@@ -20,7 +20,7 @@ export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  
+
   const handleEmailAuth = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Por favor completa todos los campos")
