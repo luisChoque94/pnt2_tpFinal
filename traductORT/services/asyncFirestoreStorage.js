@@ -36,14 +36,13 @@ export const guardarTraduccion = async (userId, traduccionData) => {
   }
 }
 
-// Función combinada: traducir y guardar
+// Traducir y guardar
 export const traducirYGuardar = async (userId, textoOriginal, idiomaOrigen, idiomaDestino) => {
   try {
-    // 1. Traducir usando la función del servicio traductor
     const textoTraducido = await traducir(textoOriginal, idiomaOrigen, idiomaDestino)
 
     if (textoTraducido && textoTraducido !== "Error al traducir") {
-      // 2. Guardar en Firestore
+      
       await guardarTraduccion(userId, {
         textoOriginal: textoOriginal.trim(),
         textoTraducido: textoTraducido,
@@ -55,6 +54,28 @@ export const traducirYGuardar = async (userId, textoOriginal, idiomaOrigen, idio
     return textoTraducido
   } catch (error) {
     console.error("Error en traducirYGuardar:", error)
+    throw error
+  }
+}
+
+// Obtener historial de traducciones del usuario
+export const obtenerHistorialUsuario = async (userId) => {
+  try {
+    const q = query(collection(db, "traducciones"), where("userId", "==", userId), orderBy("fechaCreacion", "desc"))
+
+    const querySnapshot = await getDocs(q)
+    const traducciones = []
+
+    querySnapshot.forEach((doc) => {
+      traducciones.push({
+        id: doc.id,
+        ...doc.data(),
+      })
+    })
+
+    return traducciones
+  } catch (error) {
+    console.error("Error al obtener historial: ", error)
     throw error
   }
 }
@@ -75,5 +96,36 @@ export const buscarEnHistorial = async (userId, textoBusqueda) => {
   } catch (error) {
     console.error("Error al buscar en historial:", error)
     return []
+  }
+}
+
+// Eliminar una traducción
+export const eliminarTraduccion = async (traduccionId) => {
+  try {
+    await deleteDoc(doc(db, "traducciones", traduccionId))
+    console.log("Traducción eliminada")
+  } catch (error) {
+    console.error("Error al eliminar traducción: ", error)
+    throw error
+  }
+}
+
+
+// Limpiar todo el historial del usuario
+export const limpiarHistorial = async (userId) => {
+  try {
+    const q = query(collection(db, "traducciones"), where("userId", "==", userId))
+    const querySnapshot = await getDocs(q)
+
+    const deletePromises = []
+    querySnapshot.forEach((documento) => {
+      deletePromises.push(deleteDoc(doc(db, "traducciones", documento.id)))
+    })
+
+    await Promise.all(deletePromises)
+    console.log("Historial limpiado")
+  } catch (error) {
+    console.error("Error al limpiar historial: ", error)
+    throw error
   }
 }
