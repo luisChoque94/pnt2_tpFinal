@@ -30,7 +30,7 @@ const AppNavigator = () => {
               component={TraductorScreen}
               options={({ navigation }) => ({
                 title: "TraductORT",
-                headerLeft: () => (
+                headerRight: () => (
                   <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => navigation.navigate("Historial")}>
                     <Text style={{ color: "#007AFF", fontSize: 16 }}>Historial</Text>
                   </TouchableOpacity>
